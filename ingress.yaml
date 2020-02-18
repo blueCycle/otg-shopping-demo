@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nlp-app-ingress
+  namespace: nlp-app
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-port: "8080"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:676164205626:certificate/411f1bb7-a246-4375-9072-605995dc74b7
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=30,access_logs.s3.enabled=true,access_logs.s3.bucket=garystaf-aws-alb-logs-api,access_logs.s3.prefix=nlp-app
+    # alb.ingress.kubernetes.io/waf-acl-id: 46080f28-ebd8-42ac-894f-4b977178bdf0
+  labels:
+    app: nlp-app
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: nlp-client-service
+          servicePort: 80
